@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d1" for="edge" attr.name="weight" attr.type="long"/>
+<key id="d0" for="node" attr.name="label" attr.type="string"/>
+<graph edgedefault="undirected"><node id="EVAN">
+  <data key="d0">EVAN</data>
+</node>
+<node id="KAYLEIGH">
+  <data key="d0">KAYLEIGH</data>
+</node>
+<node id="TOMMY">
+  <data key="d0">TOMMY</data>
+</node>
+<node id="ANDREA">
+  <data key="d0">ANDREA</data>
+</node>
+<node id="LENNY">
+  <data key="d0">LENNY</data>
+</node>
+<node id="DR. REDFIELD">
+  <data key="d0">DR. REDFIELD</data>
+</node>
+<node id="THUMPER">
+  <data key="d0">THUMPER</data>
+</node>
+<node id="MR. MILLER">
+  <data key="d0">MR. MILLER</data>
+</node>
+<node id="CARLOS">
+  <data key="d0">CARLOS</data>
+</node>
+<node id="PROFESSOR CARTER">
+  <data key="d0">PROFESSOR CARTER</data>
+</node>
+<node id="HEIDI">
+  <data key="d0">HEIDI</data>
+</node>
+<node id="HUNTER">
+  <data key="d0">HUNTER</data>
+</node>
+<node id="JOURNAL ENTRY">
+  <data key="d0">JOURNAL ENTRY</data>
+</node>
+<node id="MRS. BOSWELL">
+  <data key="d0">MRS. BOSWELL</data>
+</node>
+<node id="EVAN'S DIARY">
+  <data key="d0">EVAN'S DIARY</data>
+</node>
+<node id="JASON">
+  <data key="d0">JASON</data>
+</node>
+<node id="MRS. KAGAN">
+  <data key="d0">MRS. KAGAN</data>
+</node>
+<node id="ANSWERING MACHINE">
+  <data key="d0">ANSWERING MACHINE</data>
+</node>
+<node id="SENIOR BROTHER">
+  <data key="d0">SENIOR BROTHER</data>
+</node>
+<node id="KARL">
+  <data key="d0">KARL</data>
+</node>
+<node id="PRIEST">
+  <data key="d0">PRIEST</data>
+</node>
+<node id="TEEN PUNK">
+  <data key="d0">TEEN PUNK</data>
+</node>
+<node id="CRICKET">
+  <data key="d0">CRICKET</data>
+</node>
+<node id="KRISTEN">
+  <data key="d0">KRISTEN</data>
+</node>
+<node id="SPENCER">
+  <data key="d0">SPENCER</data>
+</node>
+<node id="WHOOSH OF FLAMES">
+  <data key="d0">WHOOSH OF FLAMES</data>
+</node>
+<node id="MRS. HALPERN">
+  <data key="d0">MRS. HALPERN</data>
+</node>
+<node id="SMOLDERING.">
+  <data key="d0">SMOLDERING.</data>
+</node>
+<node id="REVEAL ANDREA">
+  <data key="d0">REVEAL ANDREA</data>
+</node>
+<node id="GWEN">
+  <data key="d0">GWEN</data>
+</node>
+<node id="WOMAN'S VOICE">
+  <data key="d0">WOMAN'S VOICE</data>
+</node>
+<node id="THETA CHI PLEDGE">
+  <data key="d0">THETA CHI PLEDGE</data>
+</node>
+<node id="CONVICT">
+  <data key="d0">CONVICT</data>
+</node>
+<node id="RICK">
+  <data key="d0">RICK</data>
+</node>
+<node id="ONLY BACKWARDS.">
+  <data key="d0">ONLY BACKWARDS.</data>
+</node>
+<node id="SHUDDER.">
+  <data key="d0">SHUDDER.</data>
+</node>
+<node id="WAITRESS">
+  <data key="d0">WAITRESS</data>
+</node>
+<node id="COMING.">
+  <data key="d0">COMING.</data>
+</node>
+<node id="WHEELCHAIR.">
+  <data key="d0">WHEELCHAIR.</data>
+</node>
+<node id="CROWD GATHERS.">
+  <data key="d0">CROWD GATHERS.</data>
+</node>
+<node id="ON EVAN">
+  <data key="d0">ON EVAN</data>
+</node>
+<node id="KAYLEIGH'S MOTHER">
+  <data key="d0">KAYLEIGH'S MOTHER</data>
+</node>
+<node id="CLOSE ON">
+  <data key="d0">CLOSE ON</data>
+</node>
+<edge source="EVAN" target="KAYLEIGH">
+  <data key="d1">25</data>
+</edge>
+<edge source="EVAN" target="TOMMY">
+  <data key="d1">19</data>
+</edge>
+<edge source="EVAN" target="ANDREA">
+  <data key="d1">15</data>
+</edge>
+<edge source="EVAN" target="LENNY">
+  <data key="d1">14</data>
+</edge>
+<edge source="EVAN" target="THUMPER">
+  <data key="d1">8</data>
+</edge>
+<edge source="EVAN" target="DR. REDFIELD">
+  <data key="d1">6</data>
+</edge>
+<edge source="EVAN" target="MR. MILLER">
+  <data key="d1">5</data>
+</edge>
+<edge source="EVAN" target="CARLOS">
+  <data key="d1">4</data>
+</edge>
+<edge source="EVAN" target="PROFESSOR CARTER">
+  <data key="d1">3</data>
+</edge>
+<edge source="EVAN" target="HEIDI">
+  <data key="d1">3</data>
+</edge>
+<edge source="EVAN" target="HUNTER">
+  <data key="d1">3</data>
+</edge>
+<edge source="EVAN" target="JOURNAL ENTRY">
+  <data key="d1">3</data>
+</edge>
+<edge source="EVAN" target="EVAN'S DIARY">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="JASON">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="MRS. KAGAN">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="ANSWERING MACHINE">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="SENIOR BROTHER">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="KARL">
+  <data key="d1">2</data>
+</edge>
+<edge source="EVAN" target="TEEN PUNK">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="CRICKET">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="KRISTEN">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="SPENCER">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="WHOOSH OF FLAMES">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="REVEAL ANDREA">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="GWEN">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="WOMAN'S VOICE">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="THETA CHI PLEDGE">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="CONVICT">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="MRS. BOSWELL">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="RICK">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="ONLY BACKWARDS.">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="SHUDDER.">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="WAITRESS">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="COMING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="WHEELCHAIR.">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="CROWD GATHERS.">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="ON EVAN">
+  <data key="d1">1</data>
+</edge>
+<edge source="EVAN" target="KAYLEIGH'S MOTHER">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="TOMMY">
+  <data key="d1">11</data>
+</edge>
+<edge source="KAYLEIGH" target="LENNY">
+  <data key="d1">8</data>
+</edge>
+<edge source="KAYLEIGH" target="MR. MILLER">
+  <data key="d1">2</data>
+</edge>
+<edge source="KAYLEIGH" target="ANDREA">
+  <data key="d1">2</data>
+</edge>
+<edge source="KAYLEIGH" target="HUNTER">
+  <data key="d1">2</data>
+</edge>
+<edge source="KAYLEIGH" target="SENIOR BROTHER">
+  <data key="d1">2</data>
+</edge>
+<edge source="KAYLEIGH" target="PRIEST">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="TEEN PUNK">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="MRS. KAGAN">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="MRS. HALPERN">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="SMOLDERING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="CROWD GATHERS.">
+  <data key="d1">1</data>
+</edge>
+<edge source="KAYLEIGH" target="KAYLEIGH'S MOTHER">
+  <data key="d1">1</data>
+</edge>
+<edge source="TOMMY" target="LENNY">
+  <data key="d1">8</data>
+</edge>
+<edge source="TOMMY" target="MR. MILLER">
+  <data key="d1">2</data>
+</edge>
+<edge source="TOMMY" target="ANDREA">
+  <data key="d1">2</data>
+</edge>
+<edge source="TOMMY" target="TEEN PUNK">
+  <data key="d1">1</data>
+</edge>
+<edge source="TOMMY" target="WHOOSH OF FLAMES">
+  <data key="d1">1</data>
+</edge>
+<edge source="TOMMY" target="MRS. HALPERN">
+  <data key="d1">1</data>
+</edge>
+<edge source="TOMMY" target="SMOLDERING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="TOMMY" target="COMING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="ANDREA" target="DR. REDFIELD">
+  <data key="d1">8</data>
+</edge>
+<edge source="ANDREA" target="MRS. BOSWELL">
+  <data key="d1">2</data>
+</edge>
+<edge source="ANDREA" target="EVAN'S DIARY">
+  <data key="d1">2</data>
+</edge>
+<edge source="ANDREA" target="MR. MILLER">
+  <data key="d1">1</data>
+</edge>
+<edge source="ANDREA" target="JASON">
+  <data key="d1">1</data>
+</edge>
+<edge source="ANDREA" target="REVEAL ANDREA">
+  <data key="d1">1</data>
+</edge>
+<edge source="ANDREA" target="JOURNAL ENTRY">
+  <data key="d1">1</data>
+</edge>
+<edge source="ANDREA" target="KAYLEIGH'S MOTHER">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="WHOOSH OF FLAMES">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="MRS. KAGAN">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="MRS. HALPERN">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="SMOLDERING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="COMING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="WHEELCHAIR.">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="CROWD GATHERS.">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="ON EVAN">
+  <data key="d1">1</data>
+</edge>
+<edge source="LENNY" target="CLOSE ON">
+  <data key="d1">1</data>
+</edge>
+<edge source="THUMPER" target="ANSWERING MACHINE">
+  <data key="d1">2</data>
+</edge>
+<edge source="THUMPER" target="CRICKET">
+  <data key="d1">1</data>
+</edge>
+<edge source="THUMPER" target="HEIDI">
+  <data key="d1">1</data>
+</edge>
+<edge source="THUMPER" target="KRISTEN">
+  <data key="d1">1</data>
+</edge>
+<edge source="THUMPER" target="SPENCER">
+  <data key="d1">1</data>
+</edge>
+<edge source="THUMPER" target="EVAN'S DIARY">
+  <data key="d1">1</data>
+</edge>
+<edge source="CARLOS" target="CONVICT">
+  <data key="d1">1</data>
+</edge>
+<edge source="CARLOS" target="JOURNAL ENTRY">
+  <data key="d1">1</data>
+</edge>
+<edge source="PROFESSOR CARTER" target="HUNTER">
+  <data key="d1">1</data>
+</edge>
+<edge source="HEIDI" target="KRISTEN">
+  <data key="d1">1</data>
+</edge>
+<edge source="HEIDI" target="SPENCER">
+  <data key="d1">1</data>
+</edge>
+<edge source="HUNTER" target="SENIOR BROTHER">
+  <data key="d1">2</data>
+</edge>
+<edge source="JOURNAL ENTRY" target="CONVICT">
+  <data key="d1">1</data>
+</edge>
+<edge source="JOURNAL ENTRY" target="SHUDDER.">
+  <data key="d1">1</data>
+</edge>
+<edge source="KARL" target="RICK">
+  <data key="d1">1</data>
+</edge>
+<edge source="KRISTEN" target="SPENCER">
+  <data key="d1">1</data>
+</edge>
+<edge source="MRS. HALPERN" target="SMOLDERING.">
+  <data key="d1">1</data>
+</edge>
+<edge source="GWEN" target="WOMAN'S VOICE">
+  <data key="d1">1</data>
+</edge>
+</graph></graphml>
