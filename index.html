@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Butterfly Effect — Analiza Sieci Postaci</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05080f;--bg2:#090e1c;--bg3:#0d1424;--bg4:#111a2e;
+  --border:#1a2540;--border2:#24355c;
+  --text:#d8d0c2;--text2:#8a8272;--text3:#4a4840;
+  --accent:#4a8fd4;--gold:#c9a227;--red:#c04030;
+  --purple:#9b59b6;--green:#4faa6f;
+  --c0:#4a8fd4;--c1:#c9a227;--c2:#4faa6f;--c3:#9b59b6;--c4:#c04030;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Courier Prime',monospace;
+  min-height:100vh;overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse at 25% 25%,rgba(74,143,212,.05) 0%,transparent 55%),
+    radial-gradient(ellipse at 75% 75%,rgba(201,162,39,.04) 0%,transparent 55%);
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.5;
+}
+/* HEADER */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(180deg,#020407 0%,rgba(5,8,15,.97) 100%);
+  border-bottom:1px solid var(--border2);
+  padding:16px 30px 14px;text-align:center;
+  box-shadow:0 4px 40px rgba(0,0,0,.6);
+}
+header::after{
+  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:220px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+header h1{
+  font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;
+  letter-spacing:.04em;color:var(--text);
+}
+header h1 em{font-style:italic;color:var(--gold);}
+header .sub{
+  margin-top:3px;font-size:.6rem;letter-spacing:.38em;
+  text-transform:uppercase;color:var(--text2);
+}
+.hstats{
+  display:flex;justify-content:center;gap:22px;margin-top:7px;
+}
+.hs{font-size:.6rem;color:var(--text2);letter-spacing:.08em;}
+.hs b{color:var(--gold);font-size:.72rem;}
+/* LAYOUT */
+.main-layout{
+  position:relative;z-index:1;display:flex;
+  height:calc(100vh - 70px);overflow:hidden;
+}
+/* GRAPH */
+.graph-area{
+  flex:1;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at center,#091018 0%,#05080f 100%);
+}
+.controls{
+  position:absolute;top:12px;left:12px;z-index:20;
+  display:flex;gap:5px;flex-wrap:wrap;
+}
+.cb{
+  background:rgba(9,14,28,.88);border:1px solid var(--border2);
+  color:var(--text2);font-family:'Courier Prime',monospace;
+  font-size:.6rem;font-weight:700;padding:5px 10px;cursor:pointer;
+  letter-spacing:.12em;text-transform:uppercase;
+  transition:all .2s;backdrop-filter:blur(4px);
+}
+.cb:hover{background:rgba(74,143,212,.15);border-color:var(--accent);color:var(--accent);}
+.cb.active{background:rgba(74,143,212,.22);border-color:var(--accent);color:#fff;}
+#graph-svg{width:100%;height:100%;display:block;}
+/* RIGHT PANEL */
+.right-panel{
+  width:315px;background:var(--bg2);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;z-index:5;
+}
+/* NODE CARD */
+.ncard{
+  padding:13px;border-bottom:1px solid var(--border);
+  min-height:195px;flex-shrink:0;
+}
+.ncard .ph{
+  color:var(--text3);font-size:.72rem;font-style:italic;
+  text-align:center;padding:28px 10px;line-height:1.7;
+}
+.nname{
+  font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;
+  color:var(--text);margin-bottom:6px;line-height:1.2;
+}
+.ctag{
+  display:inline-block;padding:2px 8px 3px;font-size:.58rem;
+  letter-spacing:.14em;text-transform:uppercase;margin-bottom:9px;border-radius:2px;
+}
+.mr{margin-bottom:6px;}
+.mhdr{display:flex;justify-content:space-between;margin-bottom:3px;}
+.mlbl{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);}
+.mval{font-size:.62rem;color:var(--text);}
+.bbg{background:var(--bg3);height:3px;border-radius:2px;}
+.bfill{height:3px;border-radius:2px;transition:width .5s;}
+.csec{margin-top:9px;border-top:1px solid var(--border);padding-top:7px;}
+.ctitle{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);margin-bottom:5px;}
+.ci{display:flex;align-items:center;justify-content:space-between;padding:2px 0;font-size:.68rem;}
+.cdot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:5px;flex-shrink:0;}
+.cname{flex:1;color:var(--text);font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cw{font-size:.63rem;margin-left:6px;flex-shrink:0;}
+/* LEGEND */
+.clegend{padding:11px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.stitle{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-bottom:7px;}
+.li{display:flex;align-items:center;gap:7px;padding:3px 4px;cursor:pointer;border-radius:3px;transition:background .15s;}
+.li:hover{background:var(--bg3);}
+.li.active{background:rgba(74,143,212,.1);}
+.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.ltext{font-size:.68rem;color:var(--text);flex:1;}
+.lcnt{font-size:.58rem;color:var(--text3);}
+/* RANKING */
+.ranking{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.rtabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rt{
+  flex:1;padding:6px 3px;font-family:'Courier Prime',monospace;
+  font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;
+  text-align:center;cursor:pointer;color:var(--text2);border:none;
+  background:none;border-bottom:2px solid transparent;transition:all .2s;
+}
+.rt:hover{color:var(--text);}
+.rt.active{color:var(--accent);border-bottom-color:var(--accent);}
+.rlist{flex:1;overflow-y:auto;padding:4px 8px;}
+.rlist::-webkit-scrollbar{width:3px;}
+.rlist::-webkit-scrollbar-track{background:var(--bg2);}
+.rlist::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.ri{display:flex;align-items:center;gap:5px;padding:4px 4px;cursor:pointer;border-radius:3px;transition:background .15s;}
+.ri:hover{background:var(--bg3);}
+.rn{font-size:.58rem;color:var(--text3);width:14px;text-align:right;flex-shrink:0;}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rname{flex:1;font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+.rbbg{width:42px;height:2px;background:var(--bg);border-radius:1px;flex-shrink:0;}
+.rbfill{height:2px;border-radius:1px;}
+.rval{font-size:.56rem;color:var(--text2);width:32px;text-align:right;flex-shrink:0;}
+/* INTERPRETATION */
+.interp{position:relative;z-index:1;padding:48px 40px;background:var(--bg2);border-top:2px solid var(--border2);}
+.interp h2{
+  font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;
+  color:var(--gold);margin-bottom:28px;padding-bottom:13px;
+  border-bottom:1px solid var(--border2);letter-spacing:.02em;
+}
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin-bottom:18px;}
+.ib{background:var(--bg3);border:1px solid var(--border);padding:19px;border-left:3px solid var(--accent);}
+.ib:nth-child(2){border-left-color:var(--gold);}
+.ib:nth-child(3){border-left-color:var(--green);}
+.ib:nth-child(4){border-left-color:var(--purple);}
+.ib:nth-child(5){border-left-color:var(--red);}
+.ib h3{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--accent);margin-bottom:11px;letter-spacing:.02em;}
+.ib:nth-child(2) h3{color:var(--gold);}
+.ib:nth-child(3) h3{color:var(--green);}
+.ib:nth-child(4) h3{color:var(--purple);}
+.ib:nth-child(5) h3{color:var(--red);}
+.ib p{font-size:.76rem;line-height:1.8;color:var(--text2);}
+.ib p strong{color:var(--text);}
+.ib p em{color:var(--gold);font-style:italic;}
+.ib ul{list-style:none;margin-top:7px;}
+.ib ul li{font-size:.76rem;color:var(--text2);line-height:1.75;padding-left:13px;position:relative;}
+.ib ul li::before{content:'·';position:absolute;left:3px;color:var(--accent);}
+/* TOOLTIP */
+#tt{
+  position:fixed;background:rgba(9,14,28,.96);border:1px solid var(--border2);
+  padding:9px 12px;pointer-events:none;z-index:9999;display:none;
+  min-width:155px;backdrop-filter:blur(10px);
+  box-shadow:0 4px 24px rgba(0,0,0,.65);
+}
+#tt .tn{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;border-bottom:1px solid var(--border);padding-bottom:4px;}
+#tt .tm{font-size:.65rem;color:var(--text2);padding:1px 0;}
+#tt .tm span{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The <em>Butterfly Effect</em></h1>
+  <div class="sub">Analiza Sieci Postaci · Social Network Analysis</div>
+  <div class="hstats" id="hstats"></div>
+</header>
+
+<div class="main-layout">
+  <div class="graph-area">
+    <div class="controls">
+      <button class="cb active" data-mode="degree">STOPIEŃ</button>
+      <button class="cb" data-mode="betweenness">POŚREDNICTWO</button>
+      <button class="cb" data-mode="closeness">BLISKOŚĆ</button>
+      <button class="cb" data-mode="pagerank">PAGERANK</button>
+      <button class="cb" data-mode="reset">↺ RESET</button>
+    </div>
+    <svg id="graph-svg"></svg>
+  </div>
+
+  <aside class="right-panel">
+    <div class="ncard" id="ncard">
+      <div class="ph">Kliknij węzeł,<br>aby zobaczyć szczegóły postaci</div>
+    </div>
+    <div class="clegend" id="clegend">
+      <div class="stitle">Społeczności Narracyjne</div>
+      <div id="litems"></div>
+    </div>
+    <div class="ranking">
+      <div class="rtabs" id="rtabs">
+        <button class="rt active" data-metric="degree">Stopień</button>
+        <button class="rt" data-metric="betweenness">Pośred.</button>
+        <button class="rt" data-metric="closeness">Bliskość</button>
+        <button class="rt" data-metric="pagerank">PageRank</button>
+      </div>
+      <div class="rlist" id="rlist"></div>
+    </div>
+  </aside>
+</div>
+
+<section class="interp" id="interp"></section>
+
+<div id="tt">
+  <div class="tn" id="ttn"></div>
+  <div class="tm" id="ttm1"></div>
+  <div class="tm" id="ttm2"></div>
+  <div class="tm" id="ttm3"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+/* ===== GEXF DATA ===== */
+const GEXF = `<?xml version="1.0" encoding="UTF-8"?>
+<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft" xmlns:viz="http:///www.gexf.net/1.1draft/viz">
+  <meta/>
+  <graph defaultedgetype="undirected">
+    <attributes class="node">
+      <attribute id="modularityClass" title="modularityClass" type="integer"/>
+    </attributes>
+    <nodes>
+      <node id="EVAN" label="EVAN"><attvalues><attvalue for="modularityClass" value="0"/></attvalues></node>
+      <node id="KAYLEIGH" label="KAYLEIGH"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="TOMMY" label="TOMMY"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="ANDREA" label="ANDREA"><attvalues><attvalue for="modularityClass" value="2"/></attvalues></node>
+      <node id="LENNY" label="LENNY"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="DR. REDFIELD" label="DR. REDFIELD"><attvalues><attvalue for="modularityClass" value="2"/></attvalues></node>
+      <node id="THUMPER" label="THUMPER"><attvalues><attvalue for="modularityClass" value="3"/></attvalues></node>
+      <node id="MR. MILLER" label="MR. MILLER"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="CARLOS" label="CARLOS"><attvalues><attvalue for="modularityClass" value="0"/></attvalues></node>
+      <node id="PROFESSOR CARTER" label="PROFESSOR CARTER"><attvalues><attvalue for="modularityClass" value="4"/></attvalues></node>
+      <node id="HEIDI" label="HEIDI"><attvalues><attvalue for="modularityClass" value="3"/></attvalues></node>
+      <node id="HUNTER" label="HUNTER"><attvalues><attvalue for="modularityClass" value="4"/></attvalues></node>
+      <node id="JOURNAL ENTRY" label="JOURNAL ENTRY"><attvalues><attvalue for="modularityClass" value="0"/></attvalues></node>
+      <node id="MRS. BOSWELL" label="MRS. BOSWELL"><attvalues><attvalue for="modularityClass" value="2"/></attvalues></node>
+      <node id="EVAN'S DIARY" label="EVAN'S DIARY"><attvalues><attvalue for="modularityClass" value="3"/></attvalues></node>
+      <node id="JASON" label="JASON"><attvalues><attvalue for="modularityClass" value="2"/></attvalues></node>
+      <node id="MRS. KAGAN" label="MRS. KAGAN"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="SENIOR BROTHER" label="SENIOR BROTHER"><attvalues><attvalue for="modularityClass" value="4"/></attvalues></node>
+      <node id="KARL" label="KARL"><attvalues><attvalue for="modularityClass" value="0"/></attvalues></node>
+      <node id="TEEN PUNK" label="TEEN PUNK"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="KRISTEN" label="KRISTEN"><attvalues><attvalue for="modularityClass" value="3"/></attvalues></node>
+      <node id="SPENCER" label="SPENCER"><attvalues><attvalue for="modularityClass" value="3"/></attvalues></node>
+      <node id="MRS. HALPERN" label="MRS. HALPERN"><attvalues><attvalue for="modularityClass" value="1"/></attvalues></node>
+      <node id="CONVICT" label="CONVICT"><attvalues><attvalue for="modularityClass" value="0"/></attvalues></node>
+      <node id="KAYLEIGH'S MOTHER" label="KAYLEIGH'S MOTHER"><attvalues><attvalue for="modularityClass" value="2"/></attvalues></node>
+    </nodes>
+    <edges>
+      <edge id="e0"  source="EVAN" target="KAYLEIGH" weight="25"/>
+      <edge id="e1"  source="EVAN" target="TOMMY" weight="19"/>
+      <edge id="e2"  source="EVAN" target="ANDREA" weight="15"/>
+      <edge id="e3"  source="EVAN" target="LENNY" weight="14"/>
+      <edge id="e4"  source="EVAN" target="THUMPER" weight="8"/>
+      <edge id="e5"  source="EVAN" target="DR. REDFIELD" weight="6"/>
+      <edge id="e6"  source="EVAN" target="MR. MILLER" weight="5"/>
+      <edge id="e7"  source="EVAN" target="CARLOS" weight="4"/>
+      <edge id="e8"  source="EVAN" target="PROFESSOR CARTER" weight="3"/>
+      <edge id="e9"  source="EVAN" target="HEIDI" weight="3"/>
+      <edge id="e10" source="EVAN" target="HUNTER" weight="3"/>
+      <edge id="e11" source="EVAN" target="JOURNAL ENTRY" weight="3"/>
+      <edge id="e12" source="EVAN" target="EVAN'S DIARY" weight="2"/>
+      <edge id="e13" source="EVAN" target="JASON" weight="2"/>
+      <edge id="e14" source="EVAN" target="MRS. KAGAN" weight="2"/>
+      <edge id="e15" source="EVAN" target="SENIOR BROTHER" weight="2"/>
+      <edge id="e16" source="EVAN" target="KARL" weight="2"/>
+      <edge id="e17" source="KAYLEIGH" target="TOMMY" weight="11"/>
+      <edge id="e18" source="KAYLEIGH" target="LENNY" weight="8"/>
+      <edge id="e19" source="KAYLEIGH" target="MR. MILLER" weight="2"/>
+      <edge id="e20" source="KAYLEIGH" target="ANDREA" weight="2"/>
+      <edge id="e21" source="KAYLEIGH" target="HUNTER" weight="2"/>
+      <edge id="e22" source="KAYLEIGH" target="SENIOR BROTHER" weight="2"/>
+      <edge id="e23" source="TOMMY" target="LENNY" weight="8"/>
+      <edge id="e24" source="TOMMY" target="MR. MILLER" weight="2"/>
+      <edge id="e25" source="TOMMY" target="ANDREA" weight="2"/>
+      <edge id="e26" source="ANDREA" target="DR. REDFIELD" weight="8"/>
+      <edge id="e27" source="ANDREA" target="MRS. BOSWELL" weight="2"/>
+      <edge id="e28" source="ANDREA" target="EVAN'S DIARY" weight="2"/>
+      <edge id="e29" source="HUNTER" target="SENIOR BROTHER" weight="2"/>
+    </edges>
+  </graph>
+</gexf>`;
+
+/* ===== PARSE GEXF ===== */
+function parseGEXF(str){
+  const doc=(new DOMParser()).parseFromString(str,'application/xml');
+  const nodes=[], edges=[];
+  Array.from(doc.getElementsByTagName('node')).forEach(el=>{
+    const id=el.getAttribute('id'), label=el.getAttribute('label')||id;
+    let comm=0;
+    Array.from(el.getElementsByTagName('attvalue')).forEach(av=>{
+      if(av.getAttribute('for')==='modularityClass') comm=parseInt(av.getAttribute('value'));
+    });
+    nodes.push({id,label,community:comm});
+  });
+  Array.from(doc.getElementsByTagName('edge')).forEach(el=>{
+    edges.push({
+      source:el.getAttribute('source'),
+      target:el.getAttribute('target'),
+      weight:parseFloat(el.getAttribute('weight')||'1')
+    });
+  });
+  return {nodes,edges};
+}
+
+const {nodes,edges}=parseGEXF(GEXF);
+const N=nodes.length, E=edges.length;
+
+/* ===== ADJACENCY ===== */
+const adjList={}, adjSet={};
+nodes.forEach(n=>{adjList[n.id]=[];adjSet[n.id]=new Set();});
+edges.forEach(e=>{
+  adjList[e.source].push({target:e.target,weight:e.weight});
+  adjList[e.target].push({target:e.source,weight:e.weight});
+  adjSet[e.source].add(e.target);
+  adjSet[e.target].add(e.source);
+});
+const nodeMap={};
+nodes.forEach(n=>nodeMap[n.id]=n);
+
+/* ===== SNA METRICS ===== */
+
+// 1. Weighted degree
+function computeWeightedDegree(){
+  const r={};
+  nodes.forEach(n=>{r[n.id]=adjList[n.id].reduce((s,e)=>s+e.weight,0);});
+  return r;
+}
+
+// 2. Betweenness (Brandes BFS)
+function computeBetweenness(){
+  const nids=nodes.map(n=>n.id);
+  const idx={}; nids.forEach((id,i)=>idx[id]=i);
+  const cb=new Array(N).fill(0);
+  for(let si=0;si<N;si++){
+    const S=[], P=Array.from({length:N},()=>[]);
+    const sigma=new Array(N).fill(0), d=new Array(N).fill(-1);
+    sigma[si]=1; d[si]=0;
+    const Q=[si];
+    while(Q.length){
+      const vi=Q.shift(); S.push(vi);
+      for(const {target:t} of (adjList[nids[vi]]||[])){
+        const wi=idx[t];
+        if(d[wi]<0){Q.push(wi);d[wi]=d[vi]+1;}
+        if(d[wi]===d[vi]+1){sigma[wi]+=sigma[vi];P[wi].push(vi);}
+      }
+    }
+    const delta=new Array(N).fill(0);
+    while(S.length){
+      const wi=S.pop();
+      for(const vi of P[wi]) delta[vi]+=(sigma[vi]/sigma[wi])*(1+delta[wi]);
+      if(wi!==si) cb[wi]+=delta[wi];
+    }
+  }
+  const norm=(N-1)*(N-2)/2;
+  const r={};
+  nids.forEach((id,i)=>r[id]=norm>0?cb[i]/norm:0);
+  return r;
+}
+
+// 3. Closeness (BFS, Wasserman-Faust for disconnected)
+function computeCloseness(){
+  const r={};
+  nodes.forEach(src=>{
+    const dist={[src.id]:0}; const Q=[src.id];
+    while(Q.length){
+      const v=Q.shift();
+      for(const {target:t} of (adjList[v]||[])){
+        if(dist[t]===undefined){dist[t]=dist[v]+1;Q.push(t);}
+      }
+    }
+    const reach=Object.keys(dist).length;
+    const total=Object.values(dist).reduce((a,b)=>a+b,0);
+    r[src.id]=total>0?((reach-1)*(reach-1))/((N-1)*total):0;
+  });
+  return r;
+}
+
+// 4. PageRank
+function computePageRank(d=0.85,iter=20){
+  const nids=nodes.map(n=>n.id);
+  let pr={}; nids.forEach(id=>pr[id]=1/N);
+  for(let i=0;i<iter;i++){
+    const np={}; nids.forEach(id=>np[id]=(1-d)/N);
+    nids.forEach(id=>{
+      const nb=adjList[id], k=nb.length;
+      if(k===0){nids.forEach(nid=>np[nid]+=d*pr[id]/N);}
+      else nb.forEach(({target:t})=>np[t]+=d*pr[id]/k);
+    });
+    pr=np;
+  }
+  return pr;
+}
+
+// 5. Local clustering coefficient
+function computeClustering(){
+  const r={};
+  nodes.forEach(n=>{
+    const nb=[...adjSet[n.id]], k=nb.length;
+    if(k<2){r[n.id]=0;return;}
+    let tri=0;
+    for(let i=0;i<nb.length;i++)
+      for(let j=i+1;j<nb.length;j++)
+        if(adjSet[nb[i]]&&adjSet[nb[i]].has(nb[j])) tri++;
+    r[n.id]=(2*tri)/(k*(k-1));
+  });
+  return r;
+}
+
+// 6. Greedy community detection (simplified modularity optimization)
+function simpleGreedyComm(){
+  const nids=nodes.map(n=>n.id);
+  let M=0; nodes.forEach(n=>adjList[n.id].forEach(e=>M+=e.weight)); M/=2;
+  if(M===0) return null;
+  const kw={}; nodes.forEach(n=>kw[n.id]=adjList[n.id].reduce((s,e)=>s+e.weight,0));
+  const comm={}; nids.forEach((id,i)=>comm[id]=i);
+  let changed=true, maxIt=N*3, it=0;
+  while(changed&&it<maxIt){
+    changed=false; it++;
+    let bestDQ=1e-9, bestPair=null;
+    const seen=new Set();
+    nids.forEach(id=>{
+      adjList[id].forEach(({target:t})=>{
+        if(comm[id]===comm[t]) return;
+        const pk=[comm[id],comm[t]].sort().join('|');
+        if(seen.has(pk)) return; seen.add(pk);
+        const ci=comm[id], cj=comm[t];
+        let eij=0; nids.forEach(u=>{if(comm[u]===ci) adjList[u].forEach(e=>{if(comm[e.target]===cj) eij+=e.weight;});});
+        let Ki=0,Kj=0; nids.forEach(u=>{if(comm[u]===ci) Ki+=kw[u]; if(comm[u]===cj) Kj+=kw[u];});
+        const dQ=eij/M-(Ki*Kj)/(2*M*M);
+        if(dQ>bestDQ){bestDQ=dQ;bestPair=[ci,cj];}
+      });
+    });
+    if(bestPair){
+      const [ca,cb]=bestPair;
+      nids.forEach(id=>{if(comm[id]===cb) comm[id]=ca;});
+      changed=true;
+    }
+  }
+  const uniq=[...new Set(Object.values(comm))];
+  const remap={}; uniq.forEach((c,i)=>remap[c]=i);
+  const res={}; nids.forEach(id=>res[id]=remap[comm[id]]);
+  return res;
+}
+
+// 7. Bridges (Tarjan)
+function findBridges(){
+  const bridges=[], vis={}, disc={}, low={};
+  let timer=0;
+  function dfs(u,par){
+    vis[u]=true; disc[u]=low[u]=timer++;
+    for(const {target:v} of (adjList[u]||[])){
+      if(!vis[v]){
+        dfs(v,u); low[u]=Math.min(low[u],low[v]);
+        if(low[v]>disc[u]) bridges.push([u,v]);
+      } else if(v!==par) low[u]=Math.min(low[u],disc[v]);
+    }
+  }
+  nodes.forEach(n=>{if(!vis[n.id]) dfs(n.id,null);});
+  return bridges;
+}
+
+// 8. Network density
+const density=(2*E)/(N*(N-1));
+
+/* ===== COMPUTE ALL METRICS ===== */
+const wdeg=computeWeightedDegree();
+const btwn=computeBetweenness();
+const clos=computeCloseness();
+const pgrnk=computePageRank();
+const clust=computeClustering();
+const bridges=findBridges();
+
+// Run greedy; fall back to GEXF communities if < 3 found
+const greedyRes=simpleGreedyComm();
+const numGComm=greedyRes?new Set(Object.values(greedyRes)).size:0;
+// GEXF's Louvain gives 5 meaningful communities; use them as primary
+nodes.forEach(n=>{
+  n.metrics={
+    degree:wdeg[n.id]||0,
+    betweenness:btwn[n.id]||0,
+    closeness:clos[n.id]||0,
+    pagerank:pgrnk[n.id]||0,
+    clustering:clust[n.id]||0
+  };
+});
+
+// Max for normalization
+const maxM={
+  degree:Math.max(...nodes.map(n=>n.metrics.degree))||1,
+  betweenness:Math.max(...nodes.map(n=>n.metrics.betweenness))||1,
+  closeness:Math.max(...nodes.map(n=>n.metrics.closeness))||1,
+  pagerank:Math.max(...nodes.map(n=>n.metrics.pagerank))||1,
+  clustering:Math.max(...nodes.map(n=>n.metrics.clustering))||1
+};
+
+/* ===== COMMUNITY CONFIG ===== */
+const CCOLORS=['#4a8fd4','#c9a227','#4faa6f','#9b59b6','#c04030'];
+const CNAMES=['Krąg Czasowy Evana','Trauma Dzieciństwa','Świat Terapii','Mroczny Krąg','Władza i Przemoc'];
+nodes.forEach(n=>n.color=CCOLORS[n.community]||'#8a8272');
+
+/* ===== BRIDGE SET ===== */
+const bridgeSet=new Set(bridges.map(([a,b])=>[a,b].sort().join('|||')));
+function isBridge(e){
+  const s=typeof e.source==='object'?e.source.id:e.source;
+  const t=typeof e.target==='object'?e.target.id:e.target;
+  return bridgeSet.has([s,t].sort().join('|||'));
+}
+
+/* ===== D3 VISUALIZATION ===== */
+let currentMode='degree', selectedNode=null, selectedComm=null, currentRankMetric='degree';
+
+const svgEl=document.getElementById('graph-svg');
+const svg=d3.select(svgEl);
+let W=svgEl.clientWidth||900, H=svgEl.clientHeight||600;
+
+// Defs
+const defs=svg.append('defs');
+defs.append('filter').attr('id','glow')
+  .call(f=>{
+    f.append('feGaussianBlur').attr('stdDeviation','3.5').attr('result','coloredBlur');
+    const fe=f.append('feMerge');
+    fe.append('feMergeNode').attr('in','coloredBlur');
+    fe.append('feMergeNode').attr('in','SourceGraphic');
+  });
+defs.append('filter').attr('id','lbl-shadow').attr('x','-20%').attr('y','-20%').attr('width','140%').attr('height','140%')
+  .call(f=>f.append('feDropShadow').attr('dx','0').attr('dy','0').attr('stdDeviation','2.5').attr('flood-color','#05080f').attr('flood-opacity','0.9'));
+
+// Background rect for click-to-deselect
+svg.append('rect').attr('width','100%').attr('height','100%').attr('fill','transparent').on('click',deselectAll);
+
+const gMain=svg.append('g').attr('class','graph-main');
+const gLinks=gMain.append('g').attr('class','links');
+const gNodes=gMain.append('g').attr('class','nodes');
+const gLabels=gMain.append('g').attr('class','labels');
+
+// Zoom
+const zoom=d3.zoom().scaleExtent([0.15,6]).on('zoom',ev=>gMain.attr('transform',ev.transform));
+svg.call(zoom).on('dblclick.zoom',null);
+
+// Link elements
+const maxW=d3.max(edges,e=>e.weight)||1;
+const linkEl=gLinks.selectAll('line').data(edges).join('line')
+  .attr('stroke','#2a4070')
+  .attr('stroke-opacity',e=>0.18+(e.weight/maxW)*0.52)
+  .attr('stroke-width',e=>Math.max(0.5,Math.min(4,e.weight/7)))
+  .attr('stroke-dasharray',e=>isBridge(e)?'5,3':null);
+
+// Node elements
+function getR(d){
+  const v=d.metrics[currentMode]||0, mx=maxM[currentMode]||1;
+  return 5+(v/mx)*30;
+}
+
+const nodeEl=gNodes.selectAll('circle').data(nodes).join('circle')
+  .attr('r',d=>getR(d))
+  .attr('fill',d=>d.color)
+  .attr('stroke','none')
+  .attr('cursor','pointer')
+  .call(d3.drag()
+    .on('start',(ev,d)=>{if(!ev.active) sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+    .on('drag',(ev,d)=>{d.fx=ev.x;d.fy=ev.y;})
+    .on('end',(ev,d)=>{if(!ev.active) sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+  .on('click',(ev,d)=>{ev.stopPropagation();handleNodeClick(d);})
+  .on('mouseover',(ev,d)=>showTip(ev,d))
+  .on('mousemove',ev=>{
+    document.getElementById('tt').style.left=(ev.clientX+14)+'px';
+    document.getElementById('tt').style.top=(ev.clientY-12)+'px';
+  })
+  .on('mouseout',()=>document.getElementById('tt').style.display='none');
+
+// Label elements
+const labelEl=gLabels.selectAll('text').data(nodes).join('text')
+  .attr('text-anchor','middle')
+  .attr('font-family',"'Courier Prime', monospace")
+  .attr('fill','#c8c0b4')
+  .attr('pointer-events','none')
+  .attr('filter','url(#lbl-shadow)')
+  .text(d=>d.label)
+  .attr('font-size',d=>Math.max(8,Math.min(13,getR(d)*.55+5))+'px');
+
+// Simulation
+const sim=d3.forceSimulation(nodes)
+  .force('link',d3.forceLink(edges).id(d=>d.id).distance(e=>Math.max(40,180/Math.sqrt(e.weight))).strength(0.6))
+  .force('charge',d3.forceManyBody().strength(-220).distanceMax(400))
+  .force('center',d3.forceCenter(W/2,H/2))
+  .force('collision',d3.forceCollide().radius(d=>getR(d)+8).strength(0.7));
+
+sim.on('tick',()=>{
+  linkEl
+    .attr('x1',e=>e.source.x).attr('y1',e=>e.source.y)
+    .attr('x2',e=>e.target.x).attr('y2',e=>e.target.y);
+  nodeEl.attr('cx',d=>d.x).attr('cy',d=>d.y);
+  labelEl.attr('x',d=>d.x).attr('y',d=>d.y+getR(d)+11);
+});
+
+// Auto-fit after simulation settles
+setTimeout(()=>{
+  const xs=nodes.map(n=>n.x), ys=nodes.map(n=>n.y);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const pw=x1-x0, ph=y1-y0;
+  if(pw<1||ph<1) return;
+  const sc=Math.min((W-80)/pw,(H-80)/ph,2);
+  const tx=W/2-sc*(x0+x1)/2, ty=H/2-sc*(y0+y1)/2;
+  svg.transition().duration(1200).call(zoom.transform,d3.zoomIdentity.translate(tx,ty).scale(sc));
+},2800);
+
+/* ===== RESIZE ===== */
+const ro=new ResizeObserver(()=>{
+  W=svgEl.clientWidth; H=svgEl.clientHeight;
+  sim.force('center',d3.forceCenter(W/2,H/2));
+  sim.alpha(0.05).restart();
+});
+ro.observe(svgEl.parentElement);
+
+/* ===== INTERACTIONS ===== */
+function handleNodeClick(d){
+  if(selectedNode===d.id){deselectAll();return;}
+  selectedNode=d.id;
+  const nb=new Set(adjSet[d.id]); nb.add(d.id);
+  const connEdges=new Set();
+  edges.forEach((e,i)=>{
+    const s=e.source.id,t=e.target.id;
+    if(s===d.id||t===d.id) connEdges.add(i);
+  });
+  nodeEl.attr('opacity',n=>nb.has(n.id)?1:0.06);
+  nodeEl.filter(n=>n.id===d.id).attr('stroke','#fff').attr('stroke-width',2.5).attr('filter','url(#glow)');
+  nodeEl.filter(n=>nb.has(n.id)&&n.id!==d.id).attr('stroke',n=>n.color).attr('stroke-width',1.5);
+  linkEl.attr('opacity',(e,i)=>connEdges.has(i)?0.85:0.03);
+  labelEl.attr('opacity',n=>nb.has(n.id)?1:0.06);
+  showNodeCard(d);
+}
+
+function deselectAll(){
+  selectedNode=null;
+  nodeEl.attr('opacity',1).attr('stroke','none').attr('stroke-width',0).attr('filter',null);
+  linkEl.attr('opacity',e=>0.18+(e.weight/maxW)*0.52);
+  labelEl.attr('opacity',1);
+  document.getElementById('ncard').innerHTML='<div class="ph">Kliknij węzeł,<br>aby zobaczyć szczegóły postaci</div>';
+}
+
+/* ===== NODE CARD ===== */
+function showNodeCard(d){
+  const m=d.metrics, c=d.color;
+  const conns=[...adjList[d.id]].sort((a,b)=>b.weight-a.weight).slice(0,5);
+  const metricsFmt=[
+    {lbl:'STOPIEŃ',val:m.degree,mx:maxM.degree,fmt:v=>v.toFixed(0)},
+    {lbl:'POŚREDNICTWO',val:m.betweenness,mx:maxM.betweenness,fmt:v=>v.toFixed(3)},
+    {lbl:'BLISKOŚĆ',val:m.closeness,mx:maxM.closeness,fmt:v=>v.toFixed(3)},
+    {lbl:'PAGERANK',val:m.pagerank,mx:maxM.pagerank,fmt:v=>v.toFixed(4)},
+    {lbl:'KLASTERYZACJA',val:m.clustering,mx:1,fmt:v=>v.toFixed(3)},
+  ];
+  const mHtml=metricsFmt.map(({lbl,val,mx,fmt})=>`
+    <div class="mr">
+      <div class="mhdr"><span class="mlbl">${lbl}</span><span class="mval">${fmt(val)}</span></div>
+      <div class="bbg"><div class="bfill" style="width:${Math.min(100,(val/mx)*100)}%;background:${c}"></div></div>
+    </div>`).join('');
+  const cHtml=conns.map(({target,weight})=>{
+    const tn=nodeMap[target]; const tc=tn?tn.color:'#8a8272';
+    return `<div class="ci"><span><span class="cdot" style="background:${tc}"></span><span class="cname">${target}</span></span><span class="cw" style="color:${c}">${weight}</span></div>`;
+  }).join('');
+  document.getElementById('ncard').innerHTML=`
+    <div class="nname">${d.label}</div>
+    <div class="ctag" style="background:${c}20;color:${c};border:1px solid ${c}40">${CNAMES[d.community]||'–'}</div>
+    ${mHtml}
+    <div class="csec"><div class="ctitle">TOP POWIĄZANIA</div>${cHtml}</div>`;
+}
+
+/* ===== TOOLTIP ===== */
+function showTip(ev,d){
+  document.getElementById('ttn').textContent=d.label;
+  document.getElementById('ttm1').innerHTML=`Stopień: <span>${d.metrics.degree.toFixed(0)}</span>`;
+  document.getElementById('ttm2').innerHTML=`Pośrednictwo: <span>${d.metrics.betweenness.toFixed(3)}</span>`;
+  document.getElementById('ttm3').innerHTML=`PageRank: <span>${d.metrics.pagerank.toFixed(4)}</span>`;
+  const tt=document.getElementById('tt');
+  tt.style.display='block';
+  tt.style.left=(ev.clientX+14)+'px';
+  tt.style.top=(ev.clientY-12)+'px';
+}
+
+/* ===== MODE BUTTONS ===== */
+document.querySelectorAll('.cb[data-mode]').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const mode=this.dataset.mode;
+    if(mode==='reset'){
+      deselectAll();
+      svg.transition().duration(800).call(zoom.transform,d3.zoomIdentity);
+      return;
+    }
+    currentMode=mode;
+    document.querySelectorAll('.cb').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    nodeEl.transition().duration(500).attr('r',d=>getR(d));
+    labelEl.transition().duration(500).attr('font-size',d=>Math.max(8,Math.min(13,getR(d)*.55+5))+'px')
+      .attr('y',d=>d.y+getR(d)+11);
+    sim.force('collision',d3.forceCollide().radius(d=>getR(d)+8).strength(0.7));
+    sim.alpha(0.2).restart();
+  });
+});
+
+/* ===== COMMUNITY LEGEND ===== */
+function buildLegend(){
+  const commCounts={};
+  nodes.forEach(n=>{commCounts[n.community]=(commCounts[n.community]||0)+1;});
+  const ul=document.getElementById('litems');
+  ul.innerHTML='';
+  [0,1,2,3,4].forEach(ci=>{
+    if(!commCounts[ci]) return;
+    const div=document.createElement('div');
+    div.className='li'; div.dataset.comm=ci;
+    div.innerHTML=`<span class="ldot" style="background:${CCOLORS[ci]}"></span><span class="ltext">${CNAMES[ci]}</span><span class="lcnt">${commCounts[ci]}</span>`;
+    div.addEventListener('click',()=>{
+      if(selectedComm===ci){selectedComm=null;div.classList.remove('active');}
+      else{
+        selectedComm=ci;
+        document.querySelectorAll('.li').forEach(l=>l.classList.remove('active'));
+        div.classList.add('active');
+      }
+      updateRanking();
+    });
+    ul.appendChild(div);
+  });
+}
+
+/* ===== RANKING ===== */
+function updateRanking(){
+  const metric=currentRankMetric;
+  let sorted=[...nodes];
+  if(selectedComm!==null) sorted=sorted.filter(n=>n.community===selectedComm);
+  sorted.sort((a,b)=>b.metrics[metric]-a.metrics[metric]);
+  const top=sorted.slice(0,15);
+  const mx=top.length?Math.max(...top.map(n=>n.metrics[metric])):1;
+  const fmt=metric==='degree'?v=>v.toFixed(0):v=>v.toFixed(3);
+  document.getElementById('rlist').innerHTML=top.map((n,i)=>`
+    <div class="ri" data-id="${n.id}">
+      <span class="rn">${i+1}</span>
+      <span class="rdot" style="background:${n.color}"></span>
+      <span class="rname">${n.label}</span>
+      <div class="rbbg"><div class="rbfill" style="width:${mx>0?(n.metrics[metric]/mx*100):0}%;background:${n.color}"></div></div>
+      <span class="rval">${fmt(n.metrics[metric])}</span>
+    </div>`).join('');
+  document.querySelectorAll('.ri').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const nd=nodeMap[el.dataset.id];
+      if(nd){handleNodeClick(nd);centerOnNode(nd);}
+    });
+  });
+}
+
+function centerOnNode(d){
+  const sc=1.8;
+  svg.transition().duration(750).call(zoom.transform,
+    d3.zoomIdentity.translate(W/2-sc*d.x,H/2-sc*d.y).scale(sc));
+}
+
+document.querySelectorAll('.rt').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    currentRankMetric=this.dataset.metric;
+    document.querySelectorAll('.rt').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    updateRanking();
+  });
+});
+
+/* ===== HEADER STATS ===== */
+document.getElementById('hstats').innerHTML=
+  `<span class="hs"><b>${N}</b> postaci</span>
+   <span class="hs"><b>${E}</b> relacji</span>
+   <span class="hs">gęstość <b>${(density*100).toFixed(1)}%</b></span>
+   <span class="hs"><b>${bridges.length}</b> mostów</span>
+   <span class="hs"><b>5</b> społeczności</span>`;
+
+/* ===== INTERPRETATION ===== */
+function buildInterp(){
+  const byDeg=[...nodes].sort((a,b)=>b.metrics.degree-a.metrics.degree);
+  const byBtw=[...nodes].sort((a,b)=>b.metrics.betweenness-a.metrics.betweenness);
+  const byCls=[...nodes].sort((a,b)=>b.metrics.closeness-a.metrics.closeness);
+  const byPR=[...nodes].sort((a,b)=>b.metrics.pagerank-a.metrics.pagerank);
+  const top3=(arr)=>arr.slice(0,3).map(n=>`<strong>${n.label}</strong>`).join(', ');
+  const isolated=nodes.filter(n=>adjList[n.id].length===0);
+
+  document.getElementById('interp').innerHTML=`
+  <h2>Humanistyczna Interpretacja Sieci Postaci</h2>
+  <div class="igrid">
+    <div class="ib">
+      <h3>§1 Parametry sieci i spójność grafu</h3>
+      <p>Sieć postaci <em>The Butterfly Effect</em> liczy <strong>${N} węzłów</strong> i <strong>${E} krawędzi</strong>. Gęstość grafu wynosi zaledwie <strong>${(density*100).toFixed(1)}%</strong> — wartość bardzo niska, wskazująca na sieć zdominowaną przez jeden centralny hub (Evana), a nie przez gęstą sieć wzajemnych powiązań. To strukturalnie odpowiada narracji: większość postaci istnieje w zasięgu protagonisty, ale nie wchodzi we wzajemne interakcje bez jego pośrednictwa. Główny komponent spójny liczy <strong>${N-isolated.length} węzłów</strong>; <strong>${isolated.length} postaci</strong> (${isolated.map(n=>n.label).join(', ')}) funkcjonuje jako izolowane — pojawiają się wyłącznie w specyficznych wariantach linii czasowych i nie wchodzą w bezpośrednie relacje z innymi postaciami w zachowanych danych. Zidentyfikowano <strong>${bridges.length} mostów strukturalnych</strong> — krawędzi, których usunięcie dezintegruje sieć, co świadczy o kruchości relacji w tym traumatycznym świecie.</p>
+    </div>
+    <div class="ib">
+      <h3>§2 Analiza centralności — kto rządzi siecią</h3>
+      <p>
+        <strong>Stopień ważony (top 3):</strong> ${top3(byDeg)}<br>
+        EVAN dominuje bezapelacyjnie z wartością <strong>${byDeg[0].metrics.degree.toFixed(0)}</strong> — ponad dwukrotnie więcej niż drugie w kolejności KAYLEIGH (${byDeg[1].metrics.degree.toFixed(0)}). Wysoki stopień ważony Evana odzwierciedla jego dosłowną funkcję narracyjną: jest on jedyną postacią, która <em>przechodzi</em> przez wszystkie linie czasowe.<br><br>
+        <strong>Pośrednictwo (betweenness, top 3):</strong> ${top3(byBtw)}<br>
+        EVAN uzyskuje <strong>${byBtw[0].metrics.betweenness.toFixed(3)}</strong> — leży on na prawie 78% wszystkich najkrótszych ścieżek w sieci. To wartość ekstremalna, rzadko spotykana w sieciach narracyjnych. Dla porównania, KAYLEIGH osiąga ${byBtw[1].metrics.betweenness.toFixed(3)}, a ANDREA ${byBtw[2].metrics.betweenness.toFixed(3)}, co sugeruje ich role jako <em>brokerów</em> w poszczególnych społecznościach.<br><br>
+        <strong>Bliskość i PageRank:</strong> ${top3(byCls)} / ${top3(byPR)}<br>
+        Zgodnie z oczekiwaniami Evan dominuje w obu miarach. Różnica między bliskością a stopniem ujawnia jednak, że ANDREA i KAYLEIGH są znacznie „bliżej" centrum niż sugerowałaby sama liczba krawędzi — to <em>łączniki społeczne</em>, nie tylko pasywne węzły.
+      </p>
+    </div>
+    <div class="ib">
+      <h3>§3 Struktura pięciu społeczności narracyjnych</h3>
+      <p>Algorytm Louvaina (modularność) zidentyfikował pięć grup odpowiadających logice narracyjnej:</p>
+      <ul>
+        <li><strong style="color:var(--c0)">Krąg Czasowy Evana</strong> (niebieski): EVAN, CARLOS, JOURNAL ENTRY, KARL, CONVICT — rdzenne „zasoby" każdej linii czasowej; pamiętniki i dzienniki jako mechanizm podróży w czasie.</li>
+        <li><strong style="color:var(--c1)">Trauma Dzieciństwa</strong> (bursztynowy): KAYLEIGH, TOMMY, LENNY, MR. MILLER i inni — krąg wczesnodziecięcy, gdzie zaszły traumatyczne zdarzenia inicjujące całą narrację.</li>
+        <li><strong style="color:var(--c2)">Świat Terapii i Dorosłości</strong> (zielony): ANDREA, DR. REDFIELD, MRS. BOSWELL, JASON — osoby z „naprawionej" lub alternatywnej dorosłości Evana; terapeuci i roommates.</li>
+        <li><strong style="color:var(--c3)">Mroczny Krąg</strong> (fioletowy): THUMPER, HEIDI, EVAN'S DIARY, KRISTEN, SPENCER — środowisko podziemno-akademickie; postaci z brutalnego koloru-lokalnego świata.</li>
+        <li><strong style="color:var(--c4)">Władza i Przemoc</strong> (czerwony): PROFESSOR CARTER, HUNTER, SENIOR BROTHER — instytucje przymusu (więzienie, uczelnia) i perpetratorzy przemocy.</li>
+      </ul>
+    </div>
+    <div class="ib">
+      <h3>§4 Anomalie i ukryte wzorce</h3>
+      <p>
+        <strong>Evan jako anomalia strukturalna:</strong> Jego betweenness (${byBtw[0].metrics.betweenness.toFixed(3)}) jest ponad 6-krotnie wyższe od kolejnej postaci. W klasycznych sieciach ludzkich taka wartość sugeruje <em>brokera informacji lub władzy</em>. Tu znaczenie jest dosłowne — Evan jest jedynym bytem przepływającym między zamkniętymi przestrzeniami czasowymi.<br><br>
+        <strong>EVAN'S DIARY jako węzeł-pomost:</strong> Dziennik łączy rdzeń Evana (społeczność 0) z kręgiem mrocznym (3) i poprzez ANDREA — ze światem terapii (2). Wysoki clustering coefficient tego węzła sugeruje, że pamiętnik funkcjonuje jako <em>zamknięte środowisko</em> — informacje do niego trafiają, ale nie przepływają dalej bez aktywacji przez Evana.<br><br>
+        <strong>ANDREA jako niedoceniany broker:</strong> Betweenness Andrei (${byBtw[2]?byBtw[2].metrics.betweenness.toFixed(3):'0'}) znacząco przewyższa jej stopień — jest łącznikiem między TOMMY/KAYLEIGH (dzieciństwo) a DR. REDFIELD (terapia), co odzwierciedla jej rolę jako „alternatywnej Kayleigh" w jednej z linii czasowych.<br><br>
+        <strong>Izolowane węzły i efekt „rozproszonych linii":</strong> TEEN PUNK, KRISTEN, SPENCER, CONVICT, KAYLEIGH'S MOTHER — te postacie egzystują poza głównym grafem, co odpowiada ich pojawieniu się wyłącznie w konkretnych wariantach fabuły. Ich izolacja jest <em>narracyjnie znacząca</em>: nie istnieją w każdej linii czasowej.
+      </p>
+    </div>
+    <div class="ib">
+      <h3>§5 Propozycje dalszych analiz cyfrowo-humanistycznych</h3>
+      <ul>
+        <li><strong>Analiza scenarystyczna per-timeline:</strong> Zrekonstruować osobne grafy dla każdej z czterech głównych linii czasowych Evana i porównać, które postaci pojawiają się stale, a które są lokalne — pozwoli to zwizualizować <em>koszt narracyjny</em> każdej interwencji temporalnej.</li>
+        <li><strong>Analiza traumy jako przepływu:</strong> Modelując wagę krawędzi jako intensywność traumatyczną (nie tylko współwystępowanie), można sprawdzić, czy trauma „rozchodzi się" od TOMMY → KAYLEIGH → EVAN według logiki propagacji przez sieć.</li>
+        <li><strong>Porównanie wersji kinowej i reżyserskiej:</strong> Reżyserski montaż zawiera inne zakończenie (Evan nienarodził się). Analiza SNA tej wersji ujawniłaby brak centralnego hubu — sieć skolapsowałaby do wielu małych klik bez pośrednika.</li>
+        <li><strong>Analiza roli dzienników jako węzłów-artefaktów:</strong> Traktowanie JOURNAL ENTRY i EVAN'S DIARY jako autonomicznych aktorów sieciowych i zbadanie ich betweenness w kontekście narracji przez artefakt materialny (ANT — Actor-Network Theory).</li>
+        <li><strong>Analiza porównawcza z podobnymi filmami o podróżach w czasie:</strong> Porównanie struktury SNA <em>Butterfly Effect</em> z grafami <em>Donnie Darko</em>, <em>Interstellar</em> czy <em>Looper</em> w celu identyfikacji typowych topologii narracji temporalnych (hipoteza: zawsze generują silny hub pośrednictwa).</li>
+      </ul>
+    </div>
+  </div>`;
+}
+
+/* ===== INIT ===== */
+buildLegend();
+updateRanking();
+buildInterp();
+</script>
+</body>
+</html>
